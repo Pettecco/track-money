@@ -2,9 +2,10 @@ from sqlalchemy import Column, Integer, String
 
 from app.authentication._password import get_password_hash
 from app.domain_exception import DomainException
+from app.infra.database import Base
 
 
-class _User:
+class _User(Base):
     __tablename__ = "users"
     __table_args__ = {"schema": "authentication"}
     id = Column(Integer, primary_key=True, index=True)
