@@ -1,3 +1,14 @@
 @baseUrl = http://localhost:8000
 
+### Health Check Endpoint
 GET {{baseUrl}}/health
+
+### User Registration Endpoint
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "testee@teste.com.br",
+  "password": "super123456"
+}
