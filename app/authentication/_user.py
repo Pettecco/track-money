@@ -9,25 +9,25 @@ class _User(Base):
     __tablename__ = "users"
     __table_args__ = {"schema": "authentication"}
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(128))
-    email = Column(String(128), unique=True, index=True)
-    hashed_password = Column(String(512))
+    name = Column(String(128), nullable=False)
+    email = Column(String(128), nullable=False, unique=True, index=True)
+    hashed_password = Column(String(512), nullable=False)
 
     def __init__(self, name: str, email: str, password: str):
         DomainException.validate(
-            name is not None and len(name) <= 128,
-            "Name must be at most 128 characters long.",
+            bool(name) and len(name) <= 128,
+            "Name is required and must be at most 128 characters long.",
         )
         self.name = name
 
         DomainException.validate(
-            email is not None and len(email) <= 128,
-            "Email must be at most 128 characters long.",
+            bool(email) and len(email) <= 128,
+            "Email is required and must be at most 128 characters long.",
         )
         self.email = email
 
         DomainException.validate(
-            password is not None and len(password) >= 8,
+            bool(password) and len(password) >= 8,
             "Password must be a non-empty string with a minimum length of 8 characters.",
         )
         self.hashed_password = get_password_hash(password)
