@@ -11,13 +11,21 @@ services:
       - '5437:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: track_money_adminer
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
 volumes:
   postgres_data:
