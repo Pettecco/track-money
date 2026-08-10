@@ -49,12 +49,16 @@ async def init_database():
     engine = get_engine()
     async with engine.connect() as conn:
         await conn.execute(text("CREATE SCHEMA IF NOT EXISTS authentication"))
+        await conn.execute(text("CREATE SCHEMA IF NOT EXISTS subscription"))
         await conn.commit()
 
 
 async def create_tables():
     from app.authentication._user import (
         User,  # noqa: F401 - import required for SQLAlchemy model discovery
+    )
+    from app.subscription.plan._plan import (
+        Plan,  # noqa: F401 - import required for SQLAlchemy model discovery
     )
 
     engine = get_engine()
