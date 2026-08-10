@@ -1,8 +1,13 @@
 import os
 from collections.abc import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine, async_sessionmaker
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -49,7 +54,7 @@ async def init_database():
 
 async def create_tables():
     from app.authentication._user import (
-        _User,  # noqa: F401 - import required for SQLAlchemy model discovery
+        User,  # noqa: F401 - import required for SQLAlchemy model discovery
     )
 
     engine = get_engine()

@@ -4,8 +4,8 @@ from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from app.authentication._user import _User
-from app.authentication.user_repository import UserRepository, get_user_repository
+from app.authentication._user import User
+from app.authentication._user_repository import UserRepository, get_user_repository
 
 
 class UserCreate(BaseModel):
@@ -25,7 +25,7 @@ async def register_user(
             status_code=400, content={"detail": "Email already registered"}
         )
 
-    user = _User(name=body.name, email=body.email, password=body.password)
+    user = User(name=body.name, email=body.email, password=body.password)
 
     await user_repository.create(user)
 

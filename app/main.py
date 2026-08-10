@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.authentication.route import user_router
+from app.authentication import user_router
 from app.domain_exception import DomainException
 from app.infra.database import create_tables, init_database
 
