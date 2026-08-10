@@ -1,5 +1,6 @@
 import logging
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -10,6 +11,7 @@ from app.infra.database import create_tables, init_database
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+load_dotenv()
 init_database()
 create_tables()
 
