@@ -14,20 +14,20 @@ class UserCreate(BaseModel):
     password: str
 
 
-def register_user(
+async def register_user(
     body: UserCreate,
     user_repository: Annotated[UserRepository, Depends(get_user_repository)],
 ):
     """Create a new user."""
 
-    if user_repository.get_by_email(body.email):
+    if await user_repository.get_by_email(body.email):
         return JSONResponse(
             status_code=400, content={"detail": "Email already registered"}
         )
 
     user = _User(name=body.name, email=body.email, password=body.password)
 
-    user_repository.create(user)
+    await user_repository.create(user)
 
     return JSONResponse(
         status_code=201, content=None, headers={"Location": f"/users/{user.id}"}

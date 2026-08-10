@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from app.authentication._password import get_password_hash
+from app.authentication._password import get_password_hash, verify_password
 from app.domain_exception import DomainException
 from app.infra.database import Base
 
@@ -31,3 +31,7 @@ class _User(Base):
             "Password must be a non-empty string with a minimum length of 8 characters.",
         )
         self.hashed_password = get_password_hash(password)
+
+    def verify_password(self, password: str) -> bool:
+        """Verify the provided password against the stored hashed password"""
+        return verify_password(password, str(self.hashed_password))

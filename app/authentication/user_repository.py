@@ -1,29 +1,31 @@
 from typing import Annotated
 
 from fastapi.params import Depends
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.authentication._user import _User
 from app.infra.database import get_db
 
 
 class UserRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
-    def create(self, user: _User):
+    async def create(self, user: _User):
         """Create a ew user in the database."""
         self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
+        await self.db.commit()
+        await self.db.refresh(user)
 
-    def get_by_email(self, email: str) -> _User | None:
+    async def get_by_email(self, email: str) -> _User | None:
         """Retrieve a user by email"""
-        return self.db.query(_User).filter_by(email=email).first()
+        result = await self.db.execute(select(_User).filter_by(email=email))
+        return result.scalar_one_or_none()
 
 
-def get_user_repository(
-    db: Annotated[Session, Depends(get_db)],
+async def get_user_repository(
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> UserRepository:
     """Dependency to get a UserRepository instance."""
     return UserRepository(db)
