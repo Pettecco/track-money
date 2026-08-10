@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from app.authentication._post_user import post_user
+from app.authentication._register_user import register_user
 
 user_router = APIRouter()
 
 user_router.add_api_route(
-    path="/",
-    endpoint=post_user,
+    path="",
+    endpoint=register_user,
     methods=["POST"],
     response_model=None,
     tags=["users"],
