@@ -1,55 +1,57 @@
 import os
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 
-from sqlalchemy import Engine, create_engine, text
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine, async_sessionmaker
+from sqlalchemy import text
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
-_engine: Engine | None = None
-_session_local: sessionmaker | None = None
+_engine: AsyncEngine | None = None
+_session_local: async_sessionmaker | None = None
 
 
-def get_engine() -> Engine:
+def get_engine() -> AsyncEngine:
     global _engine
     if _engine is None:
         database_url = os.getenv("DATABASE_URL")
         if not database_url:
             raise ValueError("DATABASE_URL environment variable is required")
 
-        _engine = create_engine(database_url)
+        _engine = create_async_engine(database_url)
 
     return _engine
 
 
-def get_session_local() -> sessionmaker:
+def get_session_local() -> async_sessionmaker:
     global _session_local
     if _session_local is None:
-        _session_local = sessionmaker(
-            autocommit=False, autoflush=False, bind=get_engine()
+        _session_local = async_sessionmaker(
+            autocommit=False, autoflush=False, bind=get_engine(), class_=AsyncSession
         )
     return _session_local
 
 
-def get_db() -> Generator[Session, None, None]:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     db = get_session_local()()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
-def init_database():
+async def init_database():
     engine = get_engine()
-    with engine.connect() as conn:
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS authentication"))
-        conn.commit()
+    async with engine.connect() as conn:
+        await conn.execute(text("CREATE SCHEMA IF NOT EXISTS authentication"))
+        await conn.commit()
 
 
-def create_tables():
+async def create_tables():
     from app.authentication._user import (
         _User,  # noqa: F401 - import required for SQLAlchemy model discovery
     )
 
     engine = get_engine()
-    Base.metadata.create_all(bind=engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
