@@ -60,6 +60,12 @@ async def create_tables():
     from app.subscription.plan._plan import (
         Plan,  # noqa: F401 - import required for SQLAlchemy model discovery
     )
+    from app.subscription.user._user import (
+        User,  # noqa: F401 - import required for SQLAlchemy model discovery
+    )
+    from app.subscription.user._user_plan import (
+        UserPlan,  # noqa: F401 - import required for SQLAlchemy model discovery
+    )
 
     engine = get_engine()
     async with engine.begin() as conn:
