@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from app.authentication import user_router
 from app.domain_exception import DomainException
 from app.infra.database import create_tables, init_database
+from app.subscription import subscription_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ app = FastAPI(
 )
 
 app.include_router(user_router, prefix="/users")
+app.include_router(subscription_router, prefix="/subscriptions")
 
 
 @app.exception_handler(DomainException)
