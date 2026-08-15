@@ -70,7 +70,7 @@ Padrão Repository implementado para abstrair o acesso a dados:
 ```python
 class UserRepository:
     """Repository for creating and querying authentication users."""
-    
+
     async def get_by_email(self, email: str) -> User | None:
         """Retrieve a user by their email address."""
         result = await self.db.execute(select(User).filter_by(email=email))
@@ -84,7 +84,7 @@ Exceções de domínio centralizadas para validação de regras de negócio:
 ```python
 class DomainException(Exception):
     """Base class for all domain-level business rule violations."""
-    
+
     @staticmethod
     def validate(condition: bool, message: str):
         """Raise a DomainException if the condition is not met."""
@@ -139,28 +139,28 @@ user_plan = await query_user_plan.execute(email)
 
 ### Passos
 
-1. Clone o repositório:
-```bash
-git clone <url-do-repositorio>
-cd track-money
-```
+1. Clone o repositório
 
 2. Crie o arquivo de variáveis de ambiente:
+
 ```bash
 cp .env.example .env
 ```
 
 3. Inicie o banco de dados:
+
 ```bash
 docker compose up -d
 ```
 
 4. Instale as dependências:
+
 ```bash
 uv sync
 ```
 
 5. Execute a aplicação:
+
 ```bash
 uv run uvicorn app.main:app --reload
 ```
@@ -170,6 +170,7 @@ A API estará disponível em `http://localhost:8000`
 ### Seed de Dados Iniciais
 
 Para popular o banco com planos padrão:
+
 ```bash
 uv run python -m app.infra.seed_plans
 ```
@@ -177,16 +178,43 @@ uv run python -m app.infra.seed_plans
 ## Endpoints Principais
 
 ### Authentication
+
 - `POST /users` - Registrar novo usuário
 - `POST /users/token` - Autenticar e obter JWT
 - `GET /users/profile` - Obter perfil do usuário autenticado
 
 ### Subscription
+
 - `POST /subscriptions/select-plan` - Selecionar plano de assinatura
 - `GET /subscriptions/user` - Consultar usuário e seus planos
 
 ### Movement
+
 - `POST /movements/bank-accounts` - Registrar conta bancária
+
+### Testando a API
+
+O projeto inclui um arquivo `client.rest` com todas as rotas configuradas para teste. Use a extensão REST Client do VS Code ou similar:
+
+1. Execute o endpoint de registro de usuário
+2. Execute o endpoint de login e copie o token JWT retornado
+3. Substitua `<token-from-login>` nos demais endpoints pelo token obtido
+4. Execute os endpoints na ordem desejada
+
+Exemplo de fluxo completo:
+```bash
+# 1. Registrar usuário
+POST /users
+
+# 2. Login e obter token
+POST /users/token
+
+# 3. Selecionar plano (use o token)
+POST /subscriptions/select-plan
+
+# 4. Registrar conta bancária (use o token)
+POST /movements/bank-accounts
+```
 
 ## Decisões de Design
 

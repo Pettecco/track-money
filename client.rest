@@ -12,3 +12,39 @@ Content-Type: application/json
   "email": "testee@teste.com.br",
   "password": "super123456"
 }
+
+### User Login - Get JWT Token
+POST {{baseUrl}}/users/token
+Content-Type: application/x-www-form-urlencoded
+
+username=testee@teste.com.br&password=super123456
+
+### Get User Profile (requires JWT token)
+GET {{baseUrl}}/users/profile
+Authorization: Bearer <token-from-login>
+
+### Select Subscription Plan
+POST {{baseUrl}}/subscriptions/select-plan
+Content-Type: application/json
+Authorization: Bearer <token-from-login>
+
+{
+  "plan_id": 1,
+  "credit_card": "4111111111111111"
+}
+
+### Get User with Subscription Plans
+GET {{baseUrl}}/subscriptions/user
+Authorization: Bearer <token-from-login>
+
+### Register Bank Account
+POST {{baseUrl}}/movements/bank-accounts
+Content-Type: application/json
+Authorization: Bearer <token-from-login>
+
+{
+  "name": "Conta Principal",
+  "bank_name": "Nubank",
+  "account_number": "1234567-8",
+  "initial_balance": 1000.50
+}
