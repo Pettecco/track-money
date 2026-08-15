@@ -12,6 +12,8 @@ from app.subscription.user._user_repository import UserRepository, get_user_repo
 
 
 class SelectPlanCreate(BaseModel):
+    """Request body schema for selecting a subscription plan."""
+
     plan_id: int
     credit_card: str | None = None
 
@@ -23,11 +25,12 @@ async def select_plan(
     plan_repository: PlanRepository = Depends(get_plan_repository),
     query_user_by_email: QueryUserByEmail = Depends(get_query_user_by_email),
 ) -> None:
-    user = user_repository.get_by_email(email)
+    """Select and assign a subscription plan to the authenticated user."""
+    user = await user_repository.get_by_email(email)
     if not user:
-        user_auth = query_user_by_email.execute(email)
+        user_auth = await query_user_by_email.execute(email)
         user = User(name=user_auth.name, email=email)  # type: ignore
 
-    plan = plan_repository.get_by_id(body.plan_id)
+    plan = await plan_repository.get_by_id(body.plan_id)
     user.add_plan(plan, body.credit_card)
-    user_repository.create(user)
+    await user_repository.create(user)

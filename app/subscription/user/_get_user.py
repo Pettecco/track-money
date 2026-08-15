@@ -6,6 +6,8 @@ from app.subscription.user._user_repository import UserRepository, get_user_repo
 
 
 class PlanReponse(BaseModel):
+    """Response schema for plan data."""
+
     id: int
     name: str
     price: float
@@ -17,6 +19,8 @@ class PlanReponse(BaseModel):
 
 
 class UserResponse(BaseModel):
+    """Response schema for user data with their subscription plans."""
+
     id: int
     email: str
     name: str
@@ -30,7 +34,8 @@ async def get_user(
     email: str = Depends(get_email_from_token),
     user_repository: UserRepository = Depends(get_user_repository),
 ) -> UserResponse:
-    user = user_repository.get_by_email(email)
+    """Retrieve the authenticated user with their subscription plans."""
+    user = await user_repository.get_by_email(email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

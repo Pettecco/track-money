@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 
 from app.authentication import get_email_from_token
@@ -11,9 +11,12 @@ from app.movement.bank._bank_account_repository import (
     BankAccountRepository,
     get_bank_account_repository,
 )
+from app.subscription import QueryUserPlan, get_query_user_plan
 
 
 class BankAccountCreate(BaseModel):
+    """Request body schema for registering a new bank account."""
+
     name: str
     bank_name: str
     account_number: str
@@ -27,8 +30,21 @@ async def register_bank_account(
         get_bank_account_repository
     ),
     query_user_by_email: QueryUserByEmail = Depends(get_query_user_by_email),
+    query_user_plan: QueryUserPlan = Depends(get_query_user_plan),
 ) -> None:
-    user_auth = query_user_by_email.execute(email)
+    """Register a new bank account for the authenticated user."""
+    user_plan = await query_user_plan.execute(email)
+    if not user_plan:
+        raise HTTPException(status_code=400, detail="User has no active plan")
+
+    bank_accounts = await bank_account_repository.get_all_by_user(email)
+    if len(bank_accounts) >= user_plan.max_number_accounts:
+        raise HTTPException(
+            status_code=400,
+            detail="User has reached the maximum number of bank accounts for their plan",
+        )
+
+    user_auth = await query_user_by_email.execute(email)
     user = User(name=user_auth.name, email=user_auth.email)  # type: ignore
     bank_account = BankAccount(
         name=body.name,
@@ -38,4 +54,4 @@ async def register_bank_account(
         balance=body.initial_balance,  # type: ignore
     )
 
-    bank_account_repository.create(bank_account)
+    await bank_account_repository.create(bank_account)
