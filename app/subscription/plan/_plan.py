@@ -7,6 +7,8 @@ from app.infra.database import Base
 
 
 class Plan(Base):
+    """SQLAlchemy model representing a subscription plan with pricing and limits."""
+
     __tablename__ = "plans"
     __table_args__ = {"schema": "subscription"}
     id = Column(Integer, primary_key=True, index=True)
@@ -17,6 +19,7 @@ class Plan(Base):
     created_at = Column(DateTime, nullable=False)
 
     def __init__(self, name: str, max_number_accounts: int, price: float):
+        """Initialize a Plan with validated name, account limit, and price."""
         DomainException.validate(
             bool(name) and len(name) <= 24,
             "Name is required and must be at most 24 characters long",

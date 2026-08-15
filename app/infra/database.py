@@ -17,6 +17,7 @@ _session_local: async_sessionmaker | None = None
 
 
 def get_engine() -> AsyncEngine:
+    """Get or create the async SQLAlchemy engine."""
     global _engine
     if _engine is None:
         database_url = os.getenv("DATABASE_URL")
@@ -29,6 +30,7 @@ def get_engine() -> AsyncEngine:
 
 
 def get_session_local() -> async_sessionmaker:
+    """Get or create the async session factory."""
     global _session_local
     if _session_local is None:
         _session_local = async_sessionmaker(
@@ -38,6 +40,7 @@ def get_session_local() -> async_sessionmaker:
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session, ensuring proper cleanup on exit."""
     db = get_session_local()()
     try:
         yield db
@@ -46,6 +49,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_database():
+    """Create required database schemas if they do not exist."""
     engine = get_engine()
     async with engine.connect() as conn:
         await conn.execute(text("CREATE SCHEMA IF NOT EXISTS authentication"))
@@ -54,6 +58,7 @@ async def init_database():
 
 
 async def create_tables():
+    """Create all SQLAlchemy model tables in the database."""
     from app.authentication._user import (
         User,  # noqa: F401 - import required for SQLAlchemy model discovery
     )

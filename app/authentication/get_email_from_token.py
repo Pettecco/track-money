@@ -9,6 +9,7 @@ from app.authentication._auth import oauth2_scheme
 async def get_email_from_token(
     token: str = Depends(oauth2_scheme),
 ) -> str:
+    """Extract and validate the user's email from a JWT token."""
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",

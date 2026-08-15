@@ -8,6 +8,8 @@ from app.subscription.plan._plan import Plan
 
 
 class UserPlan(Base):
+    """SQLAlchemy model representing the relationship between a user and their subscription plan."""
+
     __tablename__ = "user_plans"
     __table_args__ = {"schema": "subscription"}
     id = Column(Integer, primary_key=True, index=True)
@@ -26,6 +28,7 @@ class UserPlan(Base):
         active: bool,
         credit_card: str | None,
     ):
+        """Initialize a UserPlan with the given plan, active status, and optional credit card."""
         self.plan = plan
         self.active = active
         self.credit_card = credit_card

@@ -8,6 +8,8 @@ from app.subscription.user._user_plan import UserPlan
 
 
 class User(Base):
+    """SQLAlchemy model representing a subscription user."""
+
     __tablename__ = "users"
     __table_args__ = {"schema": "subscription"}
     id = Column(Integer, primary_key=True, index=True)
@@ -17,6 +19,7 @@ class User(Base):
     user_plans = relationship("UserPlan", back_populates="user")
 
     def __init__(self, name: str, email: str):
+        """Initialize a subscription User with validated name and email."""
         DomainException.validate(
             bool(name) and len(name) <= 128,
             "Name must be a non-empty string with a maximum length of 128 characters.",
@@ -30,6 +33,7 @@ class User(Base):
         self.email = email
 
     def add_plan(self, plan: Plan, credit_card: str | None):
+        """Assign a new subscription plan to the user, deactivating previous plans."""
         DomainException.validate(
             plan is not None, "Plan must be provided to add to the user"
         )
@@ -44,5 +48,13 @@ class User(Base):
         self.user_plans.append(user_plan)
 
     def _deactive_plans(self):
+        """Deactivate all existing user plans before assigning a new one."""
         for user_plan in self.user_plans:
             user_plan.active = False
+
+    def get_active_plan(self) -> Plan | None:
+        """Retrieve the user's currently active subscription plan."""
+        for user_plan in self.user_plans:
+            if user_plan.active:
+                return user_plan.plan
+        return None

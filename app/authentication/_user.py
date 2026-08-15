@@ -6,6 +6,8 @@ from app.infra.database import Base
 
 
 class User(Base):
+    """SQLAlchemy model representing an authenticated user in the system."""
+
     __tablename__ = "users"
     __table_args__ = {"schema": "authentication"}
     id = Column(Integer, primary_key=True, index=True)
@@ -14,6 +16,7 @@ class User(Base):
     hashed_password = Column(String(512), nullable=False)
 
     def __init__(self, name: str, email: str, password: str):
+        """Initialize a User with validated name, email, and hashed password."""
         DomainException.validate(
             bool(name) and len(name) <= 128,
             "Name is required and must be at most 128 characters long.",
@@ -33,5 +36,5 @@ class User(Base):
         self.hashed_password = get_password_hash(password)
 
     def verify_password(self, password: str) -> bool:
-        """Verify the provided password against the stored hashed password"""
+        """Verify a plain-text password against the stored hash."""
         return verify_password(password, str(self.hashed_password))

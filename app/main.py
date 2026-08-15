@@ -19,6 +19,7 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Initialize the database and create tables on startup."""
     await init_database()
     await create_tables()
     yield

@@ -9,6 +9,8 @@ from app.authentication._user_repository import UserRepository, get_user_reposit
 
 
 class UserCreate(BaseModel):
+    """Request body schema for user registration."""
+
     email: str
     name: str
     password: str
@@ -18,7 +20,7 @@ async def register_user(
     body: UserCreate,
     user_repository: Annotated[UserRepository, Depends(get_user_repository)],
 ):
-    """Create a new user."""
+    """Register a new user in the system."""
 
     if await user_repository.get_by_email(body.email):
         return JSONResponse(

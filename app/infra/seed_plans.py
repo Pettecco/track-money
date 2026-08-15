@@ -12,6 +12,7 @@ from app.subscription.plan._plan import (
 
 
 async def seed_plans():
+    """Seed the database with default subscription plans if not already present."""
     await create_tables()
 
     engine = get_engine()

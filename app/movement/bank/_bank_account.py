@@ -17,10 +17,13 @@ class AccountStatus(Enum):
 
 
 class User:
+    """Value object representing a user associated with a bank account."""
+
     name: str
     email: str
 
     def __init__(self, name: str, email: str):
+        """Initialize a User with validated name and email."""
         DomainException.validate(
             bool(name) and len(name) <= 128,
             "Name must be a non-empty string with maximum 128 characters.",
@@ -34,11 +37,13 @@ class User:
         self.email = self.email
 
     def __composite_values__(self):
-        """Required methos for SQLAlchemy composite."""
+        """Required method for SQLAlchemy composite."""
         return self.name, self.email
 
 
 class BankAccount(Base):
+    """SQLAlchemy model representing a user's bank account."""
+
     __tablename__ = "bank_accounts"
     __table_args__ = {"schema": "movement"}
 
@@ -61,6 +66,7 @@ class BankAccount(Base):
         balance: Decimal = 0,  # pyright: ignore[reportArgumentType]
         status: AccountStatus = AccountStatus.ACTIVE,  # pyright: ignore[reportArgumentType]
     ):
+        """Initialize a BankAccount with validated fields."""
         self.name = name
         self.bank_name = bank_name
         self.account_number = account_number

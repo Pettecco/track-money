@@ -8,7 +8,7 @@ from app.authentication._user import User
 
 
 def generate_jwt_token(user: User) -> str:
-    """Generate a JWT token for the user."""
+    """Generate a JWT access token for the given user."""
     expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
     secret_key = os.getenv("SECRET_KEY")
     algorithm = os.getenv("ALGORITHM")
